@@ -605,30 +605,30 @@ async function main() {
   canvas.addEventListener("mousemove", (e) => {
     e.preventDefault();
     if (down == 1) {
-      let inv = invert4(viewMatrix);
       let dx = (5 * (e.clientX - startX)) / innerWidth;
       let dy = (5 * (e.clientY - startY)) / innerHeight;
+  
+      // 限制 dx 和 dy 的最大值
+      const maxDelta = 0.01; // 可以根据需要调整这个值
+      dx = Math.min(maxDelta, Math.max(-maxDelta, dx));
+      dy = Math.min(maxDelta, Math.max(-maxDelta, dy));
+  
+      let inv = invert4(viewMatrix);
       let d = 4;
-
+  
       inv = translate4(inv, 0, 0, d);
       inv = rotate4(inv, dx, 0, 1, 0);
       inv = rotate4(inv, -dy, 1, 0, 0);
       inv = translate4(inv, 0, 0, -d);
-      // let postAngle = Math.atan2(inv[0], inv[10])
-      // inv = rotate4(inv, postAngle - preAngle, 0, 0, 1)
-      // console.log(postAngle)
       viewMatrix = invert4(inv);
-
+  
       startX = e.clientX;
       startY = e.clientY;
     } else if (down == 2) {
       let inv = invert4(viewMatrix);
-      // inv = rotateY(inv, );
-      // let preY = inv[13];
       inv = translate4(inv, (-10 * (e.clientX - startX)) / innerWidth, 0, (10 * (e.clientY - startY)) / innerHeight);
-      // inv[13] = preY;
       viewMatrix = invert4(inv);
-
+  
       startX = e.clientX;
       startY = e.clientY;
     }
