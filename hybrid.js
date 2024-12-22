@@ -1,4 +1,4 @@
-import { OrbitControls } from 'OrbitControls.js';
+import { OrbitControls } from './OrbitControls.js';
 
 let cameras = [
   {
