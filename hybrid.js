@@ -1,4 +1,3 @@
-import { OrbitControls } from './OrbitControls.js';
 
 let cameras = [
   {
@@ -484,16 +483,6 @@ async function main() {
 
   window.addEventListener("resize", resize);
   resize();
-
-  var controls = new OrbitControls(camera, view.canvas, /*alpha=*/0.0, /*beta=*/0.0, /*radius=*/startRadius, /*enableKeyboardControls=*/false);
-  controls.minAngle = -10
-  controls.maxAngle = 10
-  controls.minZoom = 0.6
-  controls.maxZoom = 0.9
-  controls.zoomSpeed = 0.03
-  controls.panSpeed = 0.2
-  controls.orbitSpeed = 1.75
-  controls.maxPanDistance = 0.05
   
   worker.onmessage = (e) => {
     if (e.data.texdata) {
@@ -715,10 +704,6 @@ async function main() {
     let inv = invert4(viewMatrix);
     let shiftKey = activeKeys.includes("Shift") || activeKeys.includes("ShiftLeft") || activeKeys.includes("ShiftRight");
 
-    if (controls) {  
-      controls.update(); // 更新控制器  
-    }
-    
     if (activeKeys.includes("ArrowUp")) {
       if (shiftKey) {
         inv = translate4(inv, 0, -0.03, 0);
