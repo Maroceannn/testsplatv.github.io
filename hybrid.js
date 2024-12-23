@@ -113,6 +113,7 @@ function createWorker(self) {
       setTimeout(() => {
         sortRunning = false;
         if (lastView !== viewProj) {
+          console.log("Rerunning sort", lastView, viewProj);
           throttledSort();
         }
       }, 0);
@@ -267,6 +268,7 @@ function createWorker(self) {
       vertexCount = e.data.vertexCount;
     } else if (e.data.view) {
       viewProj = e.data.view;
+      console.log("Data View", viewProj);
       throttledSort();
     } else if (e.data.ply) {
       vertexCount = 0;
