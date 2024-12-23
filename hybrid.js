@@ -14,6 +14,9 @@ const maxPanDistance = 0.05
 const dampening = 0.12
 const cameraData = new SPLAT.CameraData();
 const camera = new SPLAT.Camera(cameraData);
+const Matrix3 = SPLAT.Matrix3;
+const Quaternion = SPLAT.Quaternion;
+const Vector3 = SPLAT.Vector3;
 
 let cameras = [
   camera
