@@ -152,7 +152,13 @@
         touch-action: none; /* 禁止默认的触摸行为，如滚动和缩放 */
         background-color: black; /* 设置背景颜色，如果需要的话 */
       }
-
+      #toggleButton {
+        position: absolute;
+        bottom: 10px; /* 距离底部10px */
+        right: 10px; /* 距离右侧10px */
+        padding: 10px 20px; /* 按钮内边距 */
+        cursor: pointer; /* 鼠标悬停时显示指针 */
+      }
       #instructions {
         background: rgba(0, 0, 0, 0.6);
         white-space: pre-wrap;
@@ -201,6 +207,7 @@
       </div>
     </div>
     <canvas id="canvas"></canvas>
+    <button id="toggleButton">Pause</button>
 
     <div id="quality">
       <span id="fps"></span>
