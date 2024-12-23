@@ -655,6 +655,8 @@ async function main() {
 
       isUpdatingCamera = false
   }
+
+  update();
   
   window.addEventListener(
     "wheel",
