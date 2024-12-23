@@ -389,6 +389,7 @@ let defaultViewMatrix = [0.99, 0.01, -0.14, 0, 0.02, 0.99, 0.12, 0, 0.14, -0.12,
 
 let viewMatrix = defaultViewMatrix;
 async function main() {
+  let carousel = false;
   const params = new URLSearchParams(location.search);
   try {
     viewMatrix = JSON.parse(decodeURIComponent(location.hash.slice(1)));
@@ -528,39 +529,6 @@ async function main() {
 
   let activeKeys = [];
   let currentCameraIndex = 0;
-
-  window.addEventListener("keydown", (e) => {
-    // if (document.activeElement != document.body) return;
-    carousel = false;
-    if (!activeKeys.includes(e.code)) activeKeys.push(e.code);
-    if (/\d/.test(e.key)) {
-      currentCameraIndex = parseInt(e.key);
-      camera = cameras[currentCameraIndex];
-      viewMatrix = getViewMatrix(camera);
-    }
-    if (["-", "_"].includes(e.key)) {
-      currentCameraIndex = (currentCameraIndex + cameras.length - 1) % cameras.length;
-      viewMatrix = getViewMatrix(cameras[currentCameraIndex]);
-    }
-    if (["+", "="].includes(e.key)) {
-      currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
-      viewMatrix = getViewMatrix(cameras[currentCameraIndex]);
-    }
-    // camid.innerText = "cam  " + currentCameraIndex;
-    if (e.code == "KeyV") {
-      location.hash = "#" + JSON.stringify(viewMatrix.map((k) => Math.round(k * 100) / 100));
-      //   camid.innerText = "";
-    } else if (e.code === "KeyP") {
-      carousel = true;
-      //   camid.innerText = "";
-    }
-  });
-  window.addEventListener("keyup", (e) => {
-    activeKeys = activeKeys.filter((k) => k !== e.code);
-  });
-  window.addEventListener("blur", () => {
-    activeKeys = [];
-  });
 
   let target = new Vector3(0, 0, 0);
 
