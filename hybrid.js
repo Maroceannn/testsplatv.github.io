@@ -562,7 +562,7 @@ async function main() {
     desiredTarget = new Vector3(x, y, z)
   }
 
-  camera.addEventListener("objectChanged", onCameraChange)
+  //camera.addEventListener("objectChanged", onCameraChange)
 
   const onMouseDown = e => {
       preventDefault(e)
