@@ -655,8 +655,6 @@ async function main() {
 
       isUpdatingCamera = false
   }
-
-  update();
   
   window.addEventListener(
     "wheel",
@@ -708,7 +706,6 @@ async function main() {
   let leftGamepadTrigger, rightGamepadTrigger;
 
   const frame = (now) => {
-    update();
     viewMatrix = getViewMatrix(camera);
 
     jumpDelta = Math.max(0, jumpDelta - 0.05);
