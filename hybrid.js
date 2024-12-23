@@ -918,13 +918,13 @@ function getProjectionMatrix(fx, fy, width, height) {
 }
 
 function getViewMatrix(camera) {
-  const R = camera.rotation.flat();
+  const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer;
   const t = camera.position;
   const camToWorld = [
     [R[0], R[1], R[2], 0],
     [R[3], R[4], R[5], 0],
     [R[6], R[7], R[8], 0],
-    [-t[0] * R[0] - t[1] * R[3] - t[2] * R[6], -t[0] * R[1] - t[1] * R[4] - t[2] * R[7], -t[0] * R[2] - t[1] * R[5] - t[2] * R[8], 1],
+    [-t.x * R[0] - t.y * R[3] - t.z * R[6], -t.x * R[1] - t.y * R[4] - t.z * R[7], -t.x * R[2] - t.y * R[5] - t.z * R[8], 1],
   ].flat();
   return camToWorld;
 }
