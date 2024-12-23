@@ -1,9 +1,9 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
 const startRadius = 0.8
-const radius = 0.8
-const alpha = 0.0
-const beta = 0.0
+let radius = 0.8
+let alpha = 0.0
+let beta = 0.0
 const minAngle = -10
 const maxAngle = 10
 const minZoom = 0.6
@@ -726,16 +726,6 @@ async function main() {
     let inv = invert4(viewMatrix);
 
     viewMatrix = invert4(inv);
-
-    if (carousel) {
-      let inv = invert4(defaultViewMatrix);
-
-      const t = Math.sin((Date.now() - start) / 5000);
-      inv = translate4(inv, 2.5 * t, 0, 6 * (1 - Math.cos(t)));
-      inv = rotate4(inv, -0.6 * t, 0, 1, 0);
-
-      viewMatrix = invert4(inv);
-    }
 
     jumpDelta = Math.max(0, jumpDelta - 0.05);
 
