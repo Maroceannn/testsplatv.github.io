@@ -1,10 +1,18 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
 const startRadius = 0.8
+const alpha = 0.0
+const beta = 0.0
+const minAngle = -10
+const maxAngle = 10
+const minZoom = 0.6
+const maxZoom = 0.9
+const zoomSpeed = 0.03
+const panSpeed = 0.2
+const orbitSpeed = 1.75
+const maxPanDistance = 0.05
+const dampening = 0.12
 const cameraData = new SPLAT.CameraData();
-cameraData.fx = 0.9 * startRadius * view.canvas.offsetWidth;
-cameraData.fy = 0.9 * startRadius * view.canvas.offsetHeight;
-
 const camera = new SPLAT.Camera(cameraData);
 
 let cameras = [
@@ -612,26 +620,26 @@ async function main() {
 
       if (panning) {
           const zoomNorm = computeZoomNorm()
-          const panX = -dx * this.panSpeed * 0.01 * zoomNorm
-          const panY = -dy * this.panSpeed * 0.01 * zoomNorm
+          const panX = -dx * panSpeed * 0.01 * zoomNorm
+          const panY = -dy * panSpeed * 0.01 * zoomNorm
           const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer
           const right = new Vector3(R[0], R[3], R[6])
           const up = new Vector3(R[1], R[4], R[7])
           desiredTarget = desiredTarget.add(right.multiply(panX))
           desiredTarget = desiredTarget.add(up.multiply(panY))
 
-          if (this.maxPanDistance !== undefined) {
+          if (maxPanDistance !== undefined) {
               if (desiredTarget.magnitude() > 0.0) {
-                  const mag = Math.min(desiredTarget.magnitude(), this.maxPanDistance)
+                  const mag = Math.min(desiredTarget.magnitude(), maxPanDistance)
                   desiredTarget = desiredTarget.normalize().multiply(mag)
               }
           }
       } else {
-          desiredAlpha -= dx * this.orbitSpeed * 0.003
-          desiredBeta += dy * this.orbitSpeed * 0.003
+          desiredAlpha -= dx * orbitSpeed * 0.003
+          desiredBeta += dy * orbitSpeed * 0.003
           desiredBeta = Math.min(
-              Math.max(desiredBeta, (this.minAngle * Math.PI) / 180),
-              (this.maxAngle * Math.PI) / 180
+              Math.max(desiredBeta, (minAngle * Math.PI) / 180),
+              (maxAngle * Math.PI) / 180
           )
       }
 
@@ -639,7 +647,60 @@ async function main() {
       lastY = e.clientY
   }
 
+  const lerp = (a, b, t) => {
+      return (1 - t) * a + t * b
+  }
+  
+  const rotateCameraAngle = (deltaAlpha, deltaBeta) => {
+      desiredAlpha += deltaAlpha;
+      deltaBeta += deltaBeta;
+  }
+  
+  const update = () => {
+      isUpdatingCamera = true
 
+      alpha = lerp(alpha, desiredAlpha, dampening)
+      beta = lerp(beta, desiredBeta, dampening)
+      radius = lerp(radius, desiredRadius, dampening)
+      target = target.lerp(desiredTarget, dampening)
+
+      const x = target.x + radius * Math.sin(alpha) * Math.cos(beta)
+      const y = target.y - radius * Math.sin(beta)
+      const z = target.z - radius * Math.cos(alpha) * Math.cos(beta)
+      camera.position = new Vector3(x, y, z)
+
+      const direction = target.subtract(camera.position).normalize()
+      const rx = Math.asin(-direction.y)
+      const ry = Math.atan2(direction.x, direction.z)
+      camera.rotation = Quaternion.FromEuler(new Vector3(rx, ry, 0))
+
+      const moveSpeed = 0.025
+      const rotateSpeed = 0.01
+
+      const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer
+      const forward = new Vector3(-R[2], -R[5], -R[8])
+      const right = new Vector3(R[0], R[3], R[6])
+
+      if (keys["KeyS"])
+          desiredTarget = desiredTarget.add(forward.multiply(moveSpeed))
+      if (keys["KeyW"])
+          desiredTarget = desiredTarget.subtract(forward.multiply(moveSpeed))
+      if (keys["KeyA"])
+          desiredTarget = desiredTarget.subtract(right.multiply(moveSpeed))
+      if (keys["KeyD"])
+          desiredTarget = desiredTarget.add(right.multiply(moveSpeed))
+
+      // Add rotation with 'e' and 'q' for horizontal rotation
+      if (keys["KeyE"]) desiredAlpha += rotateSpeed
+      if (keys["KeyQ"]) desiredAlpha -= rotateSpeed
+
+      // Add rotation with 'r' and 'f' for vertical rotation
+      if (keys["KeyR"]) desiredBeta += rotateSpeed
+      if (keys["KeyF"]) desiredBeta -= rotateSpeed
+
+      isUpdatingCamera = false
+  }
+  
   window.addEventListener(
     "wheel",
     (e) => {
