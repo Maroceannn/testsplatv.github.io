@@ -622,6 +622,10 @@ async function main() {
       lastY = e.clientY
   }
 
+  // 监听鼠标
+  window.addEventListener("mousedown", onMouseDown)
+  window.addEventListener("mousemove", onMouseMove)
+
   const lerp = (a, b, t) => {
       return (1 - t) * a + t * b
   }
