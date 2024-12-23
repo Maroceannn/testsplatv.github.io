@@ -1,21 +1,15 @@
+import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
+
+const cameraData = new SPLAT.CameraData();
+cameraData.fx = 0.9 * startRadius * view.canvas.offsetWidth;
+cameraData.fy = 0.9 * startRadius * view.canvas.offsetHeight;
+
+const camera = new SPLAT.Camera(cameraData);
+
 let cameras = [
-  {
-    id: 0,
-    img_name: "00001",
-    width: 1959,
-    height: 1090,
-    position: [-3.0089893469241797, -0.11086489695181866, -3.7527640949141428],
-    rotation: [
-      [0.876134201218856, 0.06925962026449776, 0.47706599800804744],
-      [-0.04747421839895102, 0.9972110940209488, -0.057586739349882114],
-      [-0.4797239414934443, 0.027805376500959853, 0.8769787916452908],
-    ],
-    fy: 1164.6601287484507,
-    fx: 1159.5880733038064,
-  },
+  camera
 ];
 
-let camera = cameras[0];
 
 function createWorker(self) {
   let vertexCount = 0;
@@ -382,7 +376,6 @@ let defaultViewMatrix = [0.99, 0.01, -0.14, 0, 0.02, 0.99, 0.12, 0, 0.14, -0.12,
 
 let viewMatrix = defaultViewMatrix;
 async function main() {
-  let carousel = false;
   const params = new URLSearchParams(location.search);
   try {
     viewMatrix = JSON.parse(decodeURIComponent(location.hash.slice(1)));
@@ -556,6 +549,96 @@ async function main() {
     activeKeys = [];
   });
 
+  let target = new Vector3(0, 0, 0);
+
+  let desiredTarget = target.clone()
+  let desiredAlpha = alpha
+  let desiredBeta = beta
+  let desiredRadius = radius
+
+  let dragging = false;
+  let panning = false;
+  let lastDist = 0;
+  let lastX = 0;
+  let lastY = 0;
+
+  let isUpdatingCamera = false
+  const onCameraChange = () => {
+    if (isUpdatingCamera) return
+
+    const eulerRotation = camera.rotation.toEuler()
+    desiredAlpha = -eulerRotation.y
+    desiredBeta = -eulerRotation.x
+
+    const x =
+        camera.position.x -
+        desiredRadius * Math.sin(desiredAlpha) * Math.cos(desiredBeta)
+    const y = camera.position.y + desiredRadius * Math.sin(desiredBeta)
+    const z =
+        camera.position.z +
+        desiredRadius * Math.cos(desiredAlpha) * Math.cos(desiredBeta)
+
+    desiredTarget = new Vector3(x, y, z)
+  }
+
+  camera.addEventListener("objectChanged", onCameraChange)
+
+  const onMouseDown = e => {
+      preventDefault(e)
+
+      dragging = true
+      panning = e.button === 2
+      lastX = e.clientX
+      lastY = e.clientY
+      window.addEventListener("mouseup", onMouseUp)
+  }
+
+  const onMouseUp = e => {
+      preventDefault(e)
+
+      dragging = false
+      panning = false
+      window.removeEventListener("mouseup", onMouseUp)
+  }
+
+  const onMouseMove = e => {
+      preventDefault(e)
+
+      if (!dragging || !camera) return
+
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+
+      if (panning) {
+          const zoomNorm = computeZoomNorm()
+          const panX = -dx * this.panSpeed * 0.01 * zoomNorm
+          const panY = -dy * this.panSpeed * 0.01 * zoomNorm
+          const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer
+          const right = new Vector3(R[0], R[3], R[6])
+          const up = new Vector3(R[1], R[4], R[7])
+          desiredTarget = desiredTarget.add(right.multiply(panX))
+          desiredTarget = desiredTarget.add(up.multiply(panY))
+
+          if (this.maxPanDistance !== undefined) {
+              if (desiredTarget.magnitude() > 0.0) {
+                  const mag = Math.min(desiredTarget.magnitude(), this.maxPanDistance)
+                  desiredTarget = desiredTarget.normalize().multiply(mag)
+              }
+          }
+      } else {
+          desiredAlpha -= dx * this.orbitSpeed * 0.003
+          desiredBeta += dy * this.orbitSpeed * 0.003
+          desiredBeta = Math.min(
+              Math.max(desiredBeta, (this.minAngle * Math.PI) / 180),
+              (this.maxAngle * Math.PI) / 180
+          )
+      }
+
+      lastX = e.clientX
+      lastY = e.clientY
+  }
+
+
   window.addEventListener(
     "wheel",
     (e) => {
@@ -585,145 +668,8 @@ async function main() {
     { passive: false }
   );
 
-  let startX, startY, down;
-  canvas.addEventListener("mousedown", (e) => {
-    carousel = false;
-    e.preventDefault();
-    startX = e.clientX;
-    startY = e.clientY;
-    down = e.ctrlKey || e.metaKey ? 2 : 1;
-  });
-  canvas.addEventListener("contextmenu", (e) => {
-    // console.log("contextmenu?");
-    // carousel = false;
-    e.preventDefault();
-    // startX = e.clientX;
-    // startY = e.clientY;
-    // down = 2;
-  });
-
-  canvas.addEventListener("mousemove", (e) => {
-    e.preventDefault();
-    if (down == 1) {
-      let inv = invert4(viewMatrix);
-      let dx = (5 * (e.clientX - startX)) / innerWidth;
-      let dy = (5 * (e.clientY - startY)) / innerHeight;
-      let d = 4;
-
-      inv = translate4(inv, 0, 0, d);
-      inv = rotate4(inv, dx, 0, 1, 0);
-      inv = rotate4(inv, -dy, 1, 0, 0);
-      inv = translate4(inv, 0, 0, -d);
-      // let postAngle = Math.atan2(inv[0], inv[10])
-      // inv = rotate4(inv, postAngle - preAngle, 0, 0, 1)
-      // console.log(postAngle)
-      viewMatrix = invert4(inv);
-
-      startX = e.clientX;
-      startY = e.clientY;
-    } else if (down == 2) {
-      let inv = invert4(viewMatrix);
-      // inv = rotateY(inv, );
-      // let preY = inv[13];
-      inv = translate4(inv, (-10 * (e.clientX - startX)) / innerWidth, 0, (10 * (e.clientY - startY)) / innerHeight);
-      // inv[13] = preY;
-      viewMatrix = invert4(inv);
-
-      startX = e.clientX;
-      startY = e.clientY;
-    }
-  });
-  canvas.addEventListener("mouseup", (e) => {
-    e.preventDefault();
-    down = false;
-    startX = 0;
-    startY = 0;
-  });
-
   let altX = 0,
-    altY = 0;
-  canvas.addEventListener(
-    "touchstart",
-    (e) => {
-      e.preventDefault();
-      if (e.touches.length === 1) {
-        carousel = false;
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        down = 1;
-      } else if (e.touches.length === 2) {
-        // console.log('beep')
-        carousel = false;
-        startX = e.touches[0].clientX;
-        altX = e.touches[1].clientX;
-        startY = e.touches[0].clientY;
-        altY = e.touches[1].clientY;
-        down = 1;
-      }
-    },
-    { passive: false }
-  );
-  canvas.addEventListener(
-    "touchmove",
-    (e) => {
-      e.preventDefault();
-      if (e.touches.length === 1 && down) {
-        let inv = invert4(viewMatrix);
-        let dx = (4 * (e.touches[0].clientX - startX)) / innerWidth;
-        let dy = (4 * (e.touches[0].clientY - startY)) / innerHeight;
-
-        let d = 4;
-        inv = translate4(inv, 0, 0, d);
-        // inv = translate4(inv,  -x, -y, -z);
-        // inv = translate4(inv,  x, y, z);
-        inv = rotate4(inv, dx, 0, 1, 0);
-        inv = rotate4(inv, -dy, 1, 0, 0);
-        inv = translate4(inv, 0, 0, -d);
-
-        viewMatrix = invert4(inv);
-
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-      } else if (e.touches.length === 2) {
-        // alert('beep')
-        const dtheta =
-          Math.atan2(startY - altY, startX - altX) -
-          Math.atan2(e.touches[0].clientY - e.touches[1].clientY, e.touches[0].clientX - e.touches[1].clientX);
-        const dscale =
-          Math.hypot(startX - altX, startY - altY) /
-          Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        const dx = (e.touches[0].clientX + e.touches[1].clientX - (startX + altX)) / 2;
-        const dy = (e.touches[0].clientY + e.touches[1].clientY - (startY + altY)) / 2;
-        let inv = invert4(viewMatrix);
-        // inv = translate4(inv,  0, 0, d);
-        inv = rotate4(inv, dtheta, 0, 0, 1);
-
-        inv = translate4(inv, -dx / innerWidth, -dy / innerHeight, 0);
-
-        // let preY = inv[13];
-        inv = translate4(inv, 0, 0, 3 * (1 - dscale));
-        // inv[13] = preY;
-
-        viewMatrix = invert4(inv);
-
-        startX = e.touches[0].clientX;
-        altX = e.touches[1].clientX;
-        startY = e.touches[0].clientY;
-        altY = e.touches[1].clientY;
-      }
-    },
-    { passive: false }
-  );
-  canvas.addEventListener(
-    "touchend",
-    (e) => {
-      e.preventDefault();
-      down = false;
-      startX = 0;
-      startY = 0;
-    },
-    { passive: false }
-  );
+    altY = 0;  
 
   let jumpDelta = 0;
   let vertexCount = 0;
