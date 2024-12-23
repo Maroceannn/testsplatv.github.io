@@ -1,5 +1,6 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
+const startRadius = 0.8
 const cameraData = new SPLAT.CameraData();
 cameraData.fx = 0.9 * startRadius * view.canvas.offsetWidth;
 cameraData.fy = 0.9 * startRadius * view.canvas.offsetHeight;
