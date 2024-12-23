@@ -723,16 +723,12 @@ async function main() {
   let leftGamepadTrigger, rightGamepadTrigger;
 
   const frame = (now) => {
-    let inv = invert4(viewMatrix);
-
-    viewMatrix = invert4(inv);
+    update();
+    viewMatrix = getViewMatrix(camera);
 
     jumpDelta = Math.max(0, jumpDelta - 0.05);
 
-    let inv2 = invert4(viewMatrix);
-    inv2 = translate4(inv2, 0, -jumpDelta, 0);
-    inv2 = rotate4(inv2, -0.1 * jumpDelta, 1, 0, 0);
-    let actualViewMatrix = invert4(inv2);
+    let actualViewMatrix = viewMatrix;
 
     const viewProj = multiply4(projectionMatrix, actualViewMatrix);
     worker.postMessage({ view: viewProj });
