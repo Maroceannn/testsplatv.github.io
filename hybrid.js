@@ -113,7 +113,6 @@ function createWorker(self) {
       setTimeout(() => {
         sortRunning = false;
         if (lastView !== viewProj) {
-          console.log("Rerunning sort", lastView, viewProj);
           throttledSort();
         }
       }, 0);
@@ -268,7 +267,6 @@ function createWorker(self) {
       vertexCount = e.data.vertexCount;
     } else if (e.data.view) {
       viewProj = e.data.view;
-      console.log("Data View", viewProj);
       throttledSort();
     } else if (e.data.ply) {
       vertexCount = 0;
@@ -740,7 +738,6 @@ async function main() {
     
     update();
     // 打印camera的position和rotation
-    console.log(camera.position, camera.rotation)
     viewMatrix = getViewMatrix(camera);
 
     jumpDelta = Math.max(0, jumpDelta - 0.05);
@@ -748,7 +745,6 @@ async function main() {
     let actualViewMatrix = viewMatrix;
 
     const viewProj = multiply4(projectionMatrix, actualViewMatrix);
-    console.log("ViewProj", viewProj)
     worker.postMessage({ view: viewProj });
 
     const currentFps = 1000 / (now - lastFrame) || 0;
