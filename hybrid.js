@@ -615,6 +615,9 @@ async function main() {
           )
       }
 
+      // 打印desiredAlpha, desiredBeta, desiredRadius
+      console.log(desiredAlpha, desiredBeta, desiredRadius)
+
       lastX = e.clientX
       lastY = e.clientY
   }
