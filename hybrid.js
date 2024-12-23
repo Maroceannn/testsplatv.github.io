@@ -387,7 +387,7 @@ const fragmentShaderSource = `
   
   `.trim();
 
-let defaultViewMatrix = [0.99, 0.01, -0.14, 0, 0.02, 0.99, 0.12, 0, 0.14, -0.12, 0.98, 0, -0.09, -0.26, 0.2, 1];
+let defaultViewMatrix = getViewMatrix(camera);
 
 let viewMatrix = defaultViewMatrix;
 async function main() {
