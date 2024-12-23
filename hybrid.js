@@ -726,6 +726,7 @@ async function main() {
     let actualViewMatrix = viewMatrix;
 
     const viewProj = multiply4(projectionMatrix, actualViewMatrix);
+    console.log("ViewProj", viewProj)
     worker.postMessage({ view: viewProj });
 
     const currentFps = 1000 / (now - lastFrame) || 0;
