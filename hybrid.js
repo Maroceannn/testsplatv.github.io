@@ -737,11 +737,7 @@ async function main() {
       viewMatrix = invert4(inv);
     }
 
-    if (isJumping) {
-      jumpDelta = Math.min(1, jumpDelta + 0.05);
-    } else {
-      jumpDelta = Math.max(0, jumpDelta - 0.05);
-    }
+    jumpDelta = Math.max(0, jumpDelta - 0.05);
 
     let inv2 = invert4(viewMatrix);
     inv2 = translate4(inv2, 0, -jumpDelta, 0);
