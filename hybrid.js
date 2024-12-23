@@ -653,23 +653,6 @@ async function main() {
       const forward = new Vector3(-R[2], -R[5], -R[8])
       const right = new Vector3(R[0], R[3], R[6])
 
-      if (keys["KeyS"])
-          desiredTarget = desiredTarget.add(forward.multiply(moveSpeed))
-      if (keys["KeyW"])
-          desiredTarget = desiredTarget.subtract(forward.multiply(moveSpeed))
-      if (keys["KeyA"])
-          desiredTarget = desiredTarget.subtract(right.multiply(moveSpeed))
-      if (keys["KeyD"])
-          desiredTarget = desiredTarget.add(right.multiply(moveSpeed))
-
-      // Add rotation with 'e' and 'q' for horizontal rotation
-      if (keys["KeyE"]) desiredAlpha += rotateSpeed
-      if (keys["KeyQ"]) desiredAlpha -= rotateSpeed
-
-      // Add rotation with 'r' and 'f' for vertical rotation
-      if (keys["KeyR"]) desiredBeta += rotateSpeed
-      if (keys["KeyF"]) desiredBeta -= rotateSpeed
-
       isUpdatingCamera = false
   }
   
