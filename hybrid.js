@@ -716,7 +716,7 @@ async function main() {
 
   const frame = (now) => {
     
-    update();
+    //update();
     // 打印camera的position和rotation
     console.log(camera.position, camera.rotation)
     viewMatrix = getViewMatrix(camera);
