@@ -1,6 +1,7 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
 const startRadius = 0.8
+const radius = 0.8
 const alpha = 0.0
 const beta = 0.0
 const minAngle = -10
