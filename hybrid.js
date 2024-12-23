@@ -610,9 +610,10 @@ async function main() {
       let dy = (5 * (e.clientY - startY)) / innerHeight;
       let d = 4;
 
-      inv = rotate4(inv, -dy, 1, 0, 0);
+      inv = translate4(inv, 0, 0, d);
       inv = rotate4(inv, dx, 0, 1, 0);
-
+      inv = rotate4(inv, -dy, 1, 0, 0);
+      inv = translate4(inv, 0, 0, -d);
       // let postAngle = Math.atan2(inv[0], inv[10])
       // inv = rotate4(inv, postAngle - preAngle, 0, 0, 1)
       // console.log(postAngle)
