@@ -628,28 +628,6 @@ async function main() {
   window.addEventListener("mousedown", onMouseDown)
   window.addEventListener("mousemove", onMouseMove)
 
-  let isButtonOn = false; // 按钮初始状态为关闭
-  let stopTime = 0; // 记录停止时间点
-  let openTime = 0; // 记录打开时间点
-  let pauseTime = 0; // 记录暂停时间
-  
-  const toggleButton = document.getElementById('toggleButton');
-  
-  toggleButton.addEventListener('click', function() {
-    isButtonOn = !isButtonOn;
-  
-    if (isButtonOn) {
-      toggleButton.textContent = 'Play';
-      stopTime = Date.now();
-      console.log('stop:', stopTime);
-    } else {
-      toggleButton.textContent = 'Pause';
-      openTime = Date.now();
-      pauseTime += openTime - stopTime;
-      console.log('open:', openTime);
-    }
-  });
-  
   const lerp = (a, b, t) => {
       return (1 - t) * a + t * b
   }
@@ -757,11 +735,6 @@ async function main() {
     if (vertexCount > 0) {
       document.getElementById("spinner").style.display = "none";
       gl.uniformMatrix4fv(u_view, false, actualViewMatrix);
-      //if (isButtonOn) {
-      //  gl.uniform1f(u_time, Math.sin((stopTime - pausetime) / 1000) / 2 + 1 / 2);
-      //} else {
-      //  gl.uniform1f(u_time, Math.sin((Date.now()-pausetime) / 1000) / 2 + 1 / 2);
-      //}
       gl.uniform1f(u_time, Math.sin(Date.now() / 1000) / 2 + 1 / 2);
 
       gl.clear(gl.COLOR_BUFFER_BIT);
