@@ -14,7 +14,7 @@ const orbitSpeed = 1.75
 const maxPanDistance = 0.05
 const dampening = 0.12
 const cameraData = new SPLAT.CameraData();
-const camera = new SPLAT.Camera(cameraData);
+let camera = new SPLAT.Camera(cameraData);
 const Matrix3 = SPLAT.Matrix3;
 const Quaternion = SPLAT.Quaternion;
 const Vector3 = SPLAT.Vector3;
@@ -527,7 +527,151 @@ async function main() {
     }
   };
 
+  let activeKeys = [];
+  let currentCameraIndex = 0;
+
+  let target = new Vector3(0, 0, 0);
+
+  let desiredTarget = target.clone()
+  let desiredAlpha = alpha
+  let desiredBeta = beta
+  let desiredRadius = radius
+
+  let dragging = false;
+  let panning = false;
+  let lastDist = 0;
+  let lastX = 0;
+  let lastY = 0;
+
+  let isUpdatingCamera = false
+  const onCameraChange = () => {
+    if (isUpdatingCamera) return
+
+    const eulerRotation = camera.rotation.toEuler()
+    desiredAlpha = -eulerRotation.y
+    desiredBeta = -eulerRotation.x
+
+    const x =
+        camera.position.x -
+        desiredRadius * Math.sin(desiredAlpha) * Math.cos(desiredBeta)
+    const y = camera.position.y + desiredRadius * Math.sin(desiredBeta)
+    const z =
+        camera.position.z +
+        desiredRadius * Math.cos(desiredAlpha) * Math.cos(desiredBeta)
+
+    desiredTarget = new Vector3(x, y, z)
+  }
+
+  camera.addEventListener("objectChanged", onCameraChange)
+
+  const onMouseDown = e => {
+      preventDefault(e)
+
+      dragging = true
+      panning = e.button === 2
+      lastX = e.clientX
+      lastY = e.clientY
+      window.addEventListener("mouseup", onMouseUp)
+  }
+
+  const onMouseUp = e => {
+      preventDefault(e)
+
+      dragging = false
+      panning = false
+      window.removeEventListener("mouseup", onMouseUp)
+  }
+
+  const onMouseMove = e => {
+      preventDefault(e)
+
+      if (!dragging || !camera) return
+
+      const dx = e.clientX - lastX
+      const dy = e.clientY - lastY
+
+      if (panning) {
+          const zoomNorm = computeZoomNorm()
+          const panX = -dx * panSpeed * 0.01 * zoomNorm
+          const panY = -dy * panSpeed * 0.01 * zoomNorm
+          const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer
+          const right = new Vector3(R[0], R[3], R[6])
+          const up = new Vector3(R[1], R[4], R[7])
+          desiredTarget = desiredTarget.add(right.multiply(panX))
+          desiredTarget = desiredTarget.add(up.multiply(panY))
+
+          if (maxPanDistance !== undefined) {
+              if (desiredTarget.magnitude() > 0.0) {
+                  const mag = Math.min(desiredTarget.magnitude(), maxPanDistance)
+                  desiredTarget = desiredTarget.normalize().multiply(mag)
+              }
+          }
+      } else {
+          desiredAlpha -= dx * orbitSpeed * 0.003
+          desiredBeta += dy * orbitSpeed * 0.003
+          desiredBeta = Math.min(
+              Math.max(desiredBeta, (minAngle * Math.PI) / 180),
+              (maxAngle * Math.PI) / 180
+          )
+      }
+
+      lastX = e.clientX
+      lastY = e.clientY
+  }
+
+  const lerp = (a, b, t) => {
+      return (1 - t) * a + t * b
+  }
   
+  const rotateCameraAngle = (deltaAlpha, deltaBeta) => {
+      desiredAlpha += deltaAlpha;
+      deltaBeta += deltaBeta;
+  }
+  
+  const update = () => {
+      isUpdatingCamera = true
+
+      alpha = lerp(alpha, desiredAlpha, dampening)
+      beta = lerp(beta, desiredBeta, dampening)
+      radius = lerp(radius, desiredRadius, dampening)
+      target = target.lerp(desiredTarget, dampening)
+
+      const x = target.x + radius * Math.sin(alpha) * Math.cos(beta)
+      const y = target.y - radius * Math.sin(beta)
+      const z = target.z - radius * Math.cos(alpha) * Math.cos(beta)
+      camera.position = new Vector3(x, y, z)
+
+      const direction = target.subtract(camera.position).normalize()
+      const rx = Math.asin(-direction.y)
+      const ry = Math.atan2(direction.x, direction.z)
+      camera.rotation = Quaternion.FromEuler(new Vector3(rx, ry, 0))
+
+      const moveSpeed = 0.025
+      const rotateSpeed = 0.01
+
+      const R = Matrix3.RotationFromQuaternion(camera.rotation).buffer
+      const forward = new Vector3(-R[2], -R[5], -R[8])
+      const right = new Vector3(R[0], R[3], R[6])
+
+      if (keys["KeyS"])
+          desiredTarget = desiredTarget.add(forward.multiply(moveSpeed))
+      if (keys["KeyW"])
+          desiredTarget = desiredTarget.subtract(forward.multiply(moveSpeed))
+      if (keys["KeyA"])
+          desiredTarget = desiredTarget.subtract(right.multiply(moveSpeed))
+      if (keys["KeyD"])
+          desiredTarget = desiredTarget.add(right.multiply(moveSpeed))
+
+      // Add rotation with 'e' and 'q' for horizontal rotation
+      if (keys["KeyE"]) desiredAlpha += rotateSpeed
+      if (keys["KeyQ"]) desiredAlpha -= rotateSpeed
+
+      // Add rotation with 'r' and 'f' for vertical rotation
+      if (keys["KeyR"]) desiredBeta += rotateSpeed
+      if (keys["KeyF"]) desiredBeta -= rotateSpeed
+
+      isUpdatingCamera = false
+  }
   
   window.addEventListener(
     "wheel",
