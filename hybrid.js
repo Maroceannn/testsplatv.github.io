@@ -713,6 +713,10 @@ async function main() {
   let leftGamepadTrigger, rightGamepadTrigger;
 
   const frame = (now) => {
+    
+    update();
+    // 打印camera的position和rotation
+    console.log(camera.position, camera.rotation)
     viewMatrix = getViewMatrix(camera);
 
     jumpDelta = Math.max(0, jumpDelta - 0.05);
