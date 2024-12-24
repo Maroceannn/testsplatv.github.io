@@ -622,9 +622,20 @@ async function main() {
       lastY = e.clientY
   }
 
+  const onWheel = e => {
+      preventDefault(e)
+
+      const zoomNorm = computeZoomNorm()
+      desiredRadius += e.deltaY * this.zoomSpeed * 0.025 * zoomNorm
+      desiredRadius = Math.min(
+          Math.max(desiredRadius, this.minZoom),
+          this.maxZoom
+      )
+  }
   // 监听鼠标
   window.addEventListener("mousedown", onMouseDown)
   window.addEventListener("mousemove", onMouseMove)
+  window.addEventListener("wheel", onWheel)
 
   let isButtonOn = false; // 按钮初始状态为关闭
   let stopTime = 0; // 记录停止时间点
