@@ -750,6 +750,9 @@ async function main() {
     const currentFps = 1000 / (now - lastFrame) || 0;
     avgFps = (isFinite(avgFps) && avgFps) * 0.9 + currentFps * 0.1;
 
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    
     if (vertexCount > 0) {
       document.getElementById("spinner").style.display = "none";
       gl.uniformMatrix4fv(u_view, false, actualViewMatrix);
