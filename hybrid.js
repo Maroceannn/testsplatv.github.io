@@ -625,11 +625,11 @@ async function main() {
   const onWheel = e => {
       preventDefault(e)
 
-      const zoomNorm = computeZoomNorm()
-      desiredRadius += e.deltaY * this.zoomSpeed * 0.025 * zoomNorm
+      const zoomNorm = 0.1 + (0.9 * (desiredRadius - minZoom)) / (maxZoom - minZoom)
+      desiredRadius += e.deltaY * zoomSpeed * 0.025 * zoomNorm
       desiredRadius = Math.min(
-          Math.max(desiredRadius, this.minZoom),
-          this.maxZoom
+          Math.max(desiredRadius, minZoom),
+          maxZoom
       )
   }
   // 监听鼠标
