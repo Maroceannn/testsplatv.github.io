@@ -751,7 +751,7 @@ async function main() {
     avgFps = (isFinite(avgFps) && avgFps) * 0.9 + currentFps * 0.1;
 
     gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
+    gl.cullFace(gl.FRONT);
     
     if (vertexCount > 0) {
       document.getElementById("spinner").style.display = "none";
