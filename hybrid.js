@@ -411,6 +411,8 @@ async function main() {
 
   const canvas = document.getElementById("canvas");
   const fps = document.getElementById("fps");
+  camera.fx = 0.9 * startRadius * canvas.offsetWidth
+  camera.fy = 0.9 * startRadius * canvas.offsetHeight
   //   const camid = document.getElementById("camid");
 
   let projectionMatrix;
