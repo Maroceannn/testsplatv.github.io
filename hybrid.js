@@ -112,7 +112,7 @@ function createWorker(self) {
     console.timeEnd("sort");
 
     lastProj = viewProj;
-    console.log("DepthIndex", minDepth, maxDepth);
+    console.log("DepthIndex", validCount, vertexCount);
 
     // 查看depthIndex是否重复
     //let hash = {};
