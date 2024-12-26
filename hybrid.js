@@ -70,7 +70,7 @@ function createWorker(self) {
     // const f_buffer = new Float32Array(buffer);
     if (lastVertexCount == vertexCount) {
       let dist = Math.hypot(...[2, 6, 10].map((k) => lastProj[k] - viewProj[k]));
-      if (dist < 999990.01) return;
+      if (dist < 0.01) return;
     } else {
       lastVertexCount = vertexCount;
     }
@@ -79,25 +79,47 @@ function createWorker(self) {
     let maxDepth = -Infinity;
     let minDepth = Infinity;
     let sizeList = new Int32Array(vertexCount);
+    let validVertexCount = 0; // 用于记录在视锥体中的顶点数量
     for (let i = 0; i < vertexCount; i++) {
       let depth =
         ((viewProj[2] * positions[3 * i + 0] + viewProj[6] * positions[3 * i + 1] + viewProj[10] * positions[3 * i + 2]) * 4096) | 0;
       sizeList[i] = depth;
       if (depth > maxDepth) maxDepth = depth;
       if (depth < minDepth) minDepth = depth;
+
+      // 检查顶点是否在视锥体中
+      let x = viewProj[0] * positions[3 * i + 0] + viewProj[4] * positions[3 * i + 1] + viewProj[8] * positions[3 * i + 2] + viewProj[12];
+      let y = viewProj[1] * positions[3 * i + 0] + viewProj[5] * positions[3 * i + 1] + viewProj[9] * positions[3 * i + 2] + viewProj[13];
+      let z = viewProj[3] * positions[3 * i + 0] + viewProj[7] * positions[3 * i + 1] + viewProj[11] * positions[3 * i + 2] + viewProj[15];
+      if (x >= -z - viewProj[14] && x <= z + viewProj[14] &&
+          y >= -z - viewProj[14] && y <= z + viewProj[14] && z >= -viewProj[14] && z <= viewProj[14]) {
+        validVertexCount++;
+      } else {
+        sizeList[i] = -1; // 标记不在视锥体中的顶点
+      }
     }
 
     // This is a 16 bit single-pass counting sort
     let depthInv = (256 * 256) / (maxDepth - minDepth);
     let counts0 = new Uint32Array(256 * 256);
+    let validSizeList = new Int32Array(validVertexCount); // 存储在视锥体中的顶点深度值
+    let j = 0; // validSizeList的索引
     for (let i = 0; i < vertexCount; i++) {
-      sizeList[i] = ((sizeList[i] - minDepth) * depthInv) | 0;
-      counts0[sizeList[i]]++;
+      let depth = sizeList[i];
+      if (depth !== -1) { // 只处理在视锥体中的顶点
+        sizeList[j] = ((depth - minDepth) * depthInv) | 0;
+        validSizeList[j] = depth;
+        counts0[sizeList[j]]++;
+        j++;
+      }
     }
     let starts0 = new Uint32Array(256 * 256);
     for (let i = 1; i < 256 * 256; i++) starts0[i] = starts0[i - 1] + counts0[i - 1];
-    depthIndex = new Uint32Array(vertexCount);
-    for (let i = 0; i < vertexCount; i++) depthIndex[starts0[sizeList[i]]++] = i;
+    depthIndex = new Uint32Array(validVertexCount);
+    for (let i = 0; i < validVertexCount; i++) {
+      let index = starts0[sizeList[i]]++;
+      depthIndex[index] = i;
+    }
 
     console.timeEnd("sort");
 
