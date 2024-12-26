@@ -80,8 +80,8 @@ function createWorker(self) {
     let minDepth = Infinity;
     let sizeList = new Int32Array(vertexCount);
     for (let i = 0; i < vertexCount; i++) {
-      let depth =
-        ((viewProj[2] * positions[3 * i + 0] + viewProj[6] * positions[3 * i + 1] + viewProj[10] * positions[3 * i + 2]) * 4096) | 0;
+      //let depth = ((viewProj[2] * positions[3 * i + 0] + viewProj[6] * positions[3 * i + 1] + viewProj[10] * positions[3 * i + 2]) * 4096) | 0;
+      let depth = Math.hypot(positions[3 * i + 0], positions[3 * i + 1], positions[3 * i + 2]);
       sizeList[i] = depth;
       if (depth > maxDepth) maxDepth = depth;
       if (depth < minDepth) minDepth = depth;
