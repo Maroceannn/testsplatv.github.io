@@ -94,7 +94,7 @@ function createWorker(self) {
         sizeList[valid_index++] = depth;
         validCount++;
         validIndexList[valid_index-1] = i;
-        }  else depthIndex[invalid_index++] = i;
+        }//  else depthIndex[invalid_index++] = i;
     }
 
     // This is a 16 bit single-pass counting sort
@@ -112,7 +112,7 @@ function createWorker(self) {
     console.timeEnd("sort");
 
     lastProj = viewProj;
-    console.log("DepthIndex", validCount, vertexCount);
+    //console.log("DepthIndex", validCount, vertexCount);
 
     // 查看depthIndex是否重复
     //let hash = {};
