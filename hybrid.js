@@ -70,7 +70,7 @@ function createWorker(self) {
     // const f_buffer = new Float32Array(buffer);
     if (lastVertexCount == vertexCount) {
       let dist = Math.hypot(...[2, 6, 10].map((k) => lastProj[k] - viewProj[k]));
-      if (dist < 0.01) return;
+      if (dist < 999990.01) return;
     } else {
       lastVertexCount = vertexCount;
     }
@@ -730,7 +730,7 @@ async function main() {
     let actualViewMatrix = viewMatrix;
 
     const viewProj = multiply4(projectionMatrix, actualViewMatrix);
-    //worker.postMessage({ view: viewProj });
+    worker.postMessage({ view: viewProj });
 
     const currentFps = 1000 / (now - lastFrame) || 0;
     avgFps = (isFinite(avgFps) && avgFps) * 0.9 + currentFps * 0.1;
