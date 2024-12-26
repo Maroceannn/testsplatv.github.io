@@ -67,12 +67,11 @@ function createWorker(self) {
 
   function runSort(viewProj) {
     if (!positions) return;
-    // const f_buffer = new Float32Array(buffer);
     if (lastVertexCount == vertexCount) {
-      let dist = Math.hypot(...[2, 6, 10].map((k) => lastProj[k] - viewProj[k]));
-      if (dist < 999990.01) return;
+        let dist = Math.hypot(...[2, 6, 10].map((k) => lastProj[k] - viewProj[k]));
+        if (dist < 999990.01) return;
     } else {
-      lastVertexCount = vertexCount;
+        lastVertexCount = vertexCount;
     }
 
     console.time("sort");
@@ -80,24 +79,25 @@ function createWorker(self) {
     let minDepth = Infinity;
     let sizeList = new Int32Array(vertexCount);
     for (let i = 0; i < vertexCount; i++) {
-      //let depth = ((viewProj[2] * positions[3 * i + 0] + viewProj[6] * positions[3 * i + 1] + viewProj[10] * positions[3 * i + 2]) * 4096) | 0;
-      let depth = Math.hypot(positions[3 * i + 0], positions[3 * i + 1], positions[3 * i + 2]);
-      sizeList[i] = depth;
-      if (depth > maxDepth) maxDepth = depth;
-      if (depth < minDepth) minDepth = depth;
+        let depth = Math.hypot(positions[3 * i + 0], positions[3 * i + 1], positions[3 * i + 2]);
+        sizeList[i] = depth;
+        if (depth > maxDepth) maxDepth = depth;
+        if (depth < minDepth) minDepth = depth;
     }
 
     // This is a 16 bit single-pass counting sort
     let depthInv = (256 * 256) / (maxDepth - minDepth);
     let counts0 = new Uint32Array(256 * 256);
     for (let i = 0; i < vertexCount; i++) {
-      sizeList[i] = ((sizeList[i] - minDepth) * depthInv) | 0;
-      counts0[sizeList[i]]++;
+        sizeList[i] = ((maxDepth - sizeList[i]) * depthInv) | 0; // 修改这里，使得深度大的值分配小的索引
+        counts0[sizeList[i]]++;
     }
     let starts0 = new Uint32Array(256 * 256);
     for (let i = 1; i < 256 * 256; i++) starts0[i] = starts0[i - 1] + counts0[i - 1];
     depthIndex = new Uint32Array(vertexCount);
-    for (let i = 0; i < vertexCount; i++) depthIndex[starts0[sizeList[i]]++] = i;
+    for (let i = vertexCount - 1; i >= 0; i--) { // 从后向前填充，以保持从大到小的顺序
+        depthIndex[starts0[sizeList[i]]++] = i;
+    }
 
     console.timeEnd("sort");
 
