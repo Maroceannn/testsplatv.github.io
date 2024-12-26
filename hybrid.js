@@ -115,13 +115,13 @@ function createWorker(self) {
     console.log("DepthIndex", minDepth, maxDepth);
 
     // 查看depthIndex是否重复
-    let hash = {};
-    for (let i = 0; i < vertexCount; i++) {
-      if (hash[depthIndex[i]]) {
-        console.log("Duplicate", i, depthIndex[i]);
-      }
-      hash[depthIndex[i]] = true;
-    }
+    //let hash = {};
+    //for (let i = 0; i < vertexCount; i++) {
+    //  if (hash[depthIndex[i]]) {
+    //    console.log("Duplicate", i, depthIndex[i]);
+    //  }
+    //  hash[depthIndex[i]] = true;
+    //}
     self.postMessage({ depthIndex, viewProj, vertexCount }, [depthIndex.buffer]);
   }
 
