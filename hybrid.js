@@ -80,6 +80,7 @@ function createWorker(self) {
     let minDepth = Infinity;
     let sizeList = new Int32Array(vertexCount);
     let validIndexList = new Int32Array(vertexCount);
+    depthIndex = new Uint32Array(vertexCount);
     let validCount = 0;
     let invalid_index = 0;
     let valid_index = 0;
@@ -106,7 +107,6 @@ function createWorker(self) {
     let starts0 = new Uint32Array(256 * 256);
     starts0[0] = vertexCount - validCount;
     for (let i = 1; i < 256 * 256; i++) starts0[i] = starts0[i - 1] + counts0[i - 1];
-    depthIndex = new Uint32Array(vertexCount);
     for (let i = 0; i < validCount; i++) depthIndex[starts0[sizeList[i]]++] = validIndexList[i];
 
     console.timeEnd("sort");
