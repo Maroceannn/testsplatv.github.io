@@ -730,7 +730,7 @@ async function main() {
     let actualViewMatrix = viewMatrix;
 
     const viewProj = multiply4(projectionMatrix, actualViewMatrix);
-    worker.postMessage({ view: viewProj });
+    //worker.postMessage({ view: viewProj });
 
     const currentFps = 1000 / (now - lastFrame) || 0;
     avgFps = (isFinite(avgFps) && avgFps) * 0.9 + currentFps * 0.1;
