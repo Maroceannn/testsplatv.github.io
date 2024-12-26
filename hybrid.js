@@ -79,30 +79,49 @@ function createWorker(self) {
     let maxDepth = -Infinity;
     let minDepth = Infinity;
     let sizeList = new Int32Array(vertexCount);
+    let validIndexList = new Int32Array(vertexCount);
+    let validCount = 0;
+    let invalid_index = 0;
+    let valid_index = 0;
     for (let i = 0; i < vertexCount; i++) {
+      // 判断是否在视锥内
       let depth =
         ((viewProj[2] * positions[3 * i + 0] + viewProj[6] * positions[3 * i + 1] + viewProj[10] * positions[3 * i + 2]) * 4096) | 0;
-      sizeList[i] = depth;
       if (depth > maxDepth) maxDepth = depth;
       if (depth < minDepth) minDepth = depth;
+      if (depth > 0) {
+        sizeList[valid_index++] = depth;
+        validCount++;
+        validIndexList[valid_index-1] = i;
+        }  else depthIndex[invalid_index++] = i;
     }
 
     // This is a 16 bit single-pass counting sort
     let depthInv = (256 * 256) / (maxDepth - minDepth);
     let counts0 = new Uint32Array(256 * 256);
-    for (let i = 0; i < vertexCount; i++) {
+    for (let i = 0; i < validCount; i++) {
       sizeList[i] = ((sizeList[i] - minDepth) * depthInv) | 0;
       counts0[sizeList[i]]++;
     }
     let starts0 = new Uint32Array(256 * 256);
+    starts0[0] = vertexCount - validCount;
     for (let i = 1; i < 256 * 256; i++) starts0[i] = starts0[i - 1] + counts0[i - 1];
     depthIndex = new Uint32Array(vertexCount);
-    for (let i = 0; i < vertexCount; i++) depthIndex[starts0[sizeList[i]]++] = i;
+    for (let i = 0; i < validCount; i++) depthIndex[starts0[sizeList[i]]++] = validIndexList[i];
 
     console.timeEnd("sort");
 
     lastProj = viewProj;
     console.log("DepthIndex", minDepth, maxDepth);
+
+    // 查看depthIndex是否重复
+    let hash = {};
+    for (let i = 0; i < vertexCount; i++) {
+      if (hash[depthIndex[i]]) {
+        console.log("Duplicate", i, depthIndex[i]);
+      }
+      hash[depthIndex[i]] = true;
+    }
     self.postMessage({ depthIndex, viewProj, vertexCount }, [depthIndex.buffer]);
   }
 
