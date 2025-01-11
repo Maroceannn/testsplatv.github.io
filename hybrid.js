@@ -496,7 +496,11 @@ async function main() {
   worker.onmessage = (e) => {
     if (e.data.texdata) {
       const { texdata, texwidth, texheight } = e.data;
-
+      JSON.stringify([{
+            type: "splat",
+            cameras: cameras,
+          },
+        ]);
       const json = new TextEncoder().encode(
         JSON.stringify([
           {
