@@ -496,7 +496,7 @@ async function main() {
       const { texdata, texwidth, texheight } = e.data;
       JSON.stringify([{
             type: "splat",
-            cameras: cameras,
+            cameras: [camera],
           },
         ]);
       const json = new TextEncoder().encode(
