@@ -154,16 +154,19 @@
         transform: translate(-50%, -50%); /* 将canvas向左和向上移动自身尺寸的50%，以实现精确居中 */
         touch-action: none; /* 禁止默认的触摸行为，如滚动和缩放 */
         background-color: black; /* 设置背景颜色，如果需要的话 */
+        position: relative; /* 设置为相对定位，以便内部元素可以绝对定位 */
       }
+      
       #toggleButton {
-        position: absolute;
+        position: absolute; /* 使用绝对定位 */
         bottom: 10px; /* 距离底部10px */
-        right: 20px; /* 距离右侧10px */
+        right: 20px; /* 距离右侧20px */
         padding: 10px 20px; /* 按钮内边距 */
         width: 120px; /* 增加宽度 */
         height: 70px; /* 增加高度 */
         font-size: 24px; /* 增大字体大小 */
         cursor: pointer; /* 鼠标悬停时显示指针 */
+        z-index: 10; /* 确保按钮在canvas之上 */
       }
       #instructions {
         background: rgba(0, 0, 0, 0.6);
