@@ -397,7 +397,7 @@ async function main() {
 
   const rowLength = 3 * 4 + 3 * 4 + 4 + 4;
   let splatData = new Uint8Array([]);
-  const downsample = splatData.length / rowLength > 500000 ? 4 : 4 / devicePixelRatio;
+  const downsample = splatData.length / rowLength > 500000 ? 1 : 1 / devicePixelRatio;
   console.log(splatData.length / rowLength, downsample);
 
   const worker = new Worker(
@@ -410,8 +410,8 @@ async function main() {
 
   const canvas = document.getElementById("canvas");
   const fps = document.getElementById("fps");
-  camera.fx = 0.9 * startRadius * canvas.offsetWidth
-  camera.fy = 0.9 * startRadius * canvas.offsetHeight
+  camera.fx = 0.6 * startRadius * canvas.offsetWidth
+  camera.fy = 0.6 * startRadius * canvas.offsetHeight
   //   const camid = document.getElementById("camid");
 
   let projectionMatrix;
