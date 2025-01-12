@@ -1,13 +1,13 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
-const startRadius = 0.3
+const startRadius = 0.7
 let radius = 0.8
 let alpha = 0.0
 let beta = 0.0
 const minAngle = -20
 const maxAngle = 20
 const minZoom = 0.0
-const maxZoom = 1.0
+const maxZoom = 1.5
 const zoomSpeed = 0.03
 const panSpeed = 0.2
 const orbitSpeed = 1.75
