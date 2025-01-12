@@ -397,7 +397,7 @@ async function main() {
 
   const rowLength = 3 * 4 + 3 * 4 + 4 + 4;
   let splatData = new Uint8Array([]);
-  const downsample = splatData.length / rowLength > 500000 ? 1 : 1 / devicePixelRatio;
+  const downsample = splatData.length / rowLength > 500000 ? 4 : 4 / devicePixelRatio;
   console.log(splatData.length / rowLength, downsample);
 
   const worker = new Worker(
@@ -741,9 +741,9 @@ async function main() {
       document.getElementById("spinner").style.display = "none";
       gl.uniformMatrix4fv(u_view, false, actualViewMatrix);
       if (isButtonOn) {
-        gl.uniform1f(u_time, (Math.sin((stopTime - pauseTime) / 1000) / 2 + 1 / 2)*0.96);
+        gl.uniform1f(u_time, Math.round((Math.sin((stopTime - pauseTime) / 1000) / 2 + 1 / 2) * 24) / 25);
       } else {
-        gl.uniform1f(u_time, (Math.sin((Date.now()-pauseTime) / 1000) / 2 + 1 / 2)*0.96);
+        gl.uniform1f(u_time, Math.round((Math.sin((Date.now()-pauseTime) / 1000) / 2 + 1 / 2) * 24) / 25);
       }
       // gl.uniform1f(u_time, Math.sin(Date.now() / 1000) / 2 + 1 / 2);
 
