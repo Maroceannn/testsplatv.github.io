@@ -793,8 +793,6 @@ async function main() {
           readChunks(new Response(splatData).body.getReader(), [{ size: 8, type: "magic" }], chunkHandler).then(() => {
             currentCameraIndex = 0;
             camera = cameras[currentCameraIndex];
-            camera.fx = 0.5 * canvas.width;
-            camera.fy = 0.5 * canvas.height;
             viewMatrix = getViewMatrix(camera);
           });
         } else {
@@ -837,8 +835,6 @@ async function main() {
         if (chunk.type === "splat") {
           cameras = chunk.cameras;
           camera = chunk.cameras[0];
-          camera.fx = 0.5 * canvas.width;
-          camera.fy = 0.5 * canvas.height;
           resize();
         }
       }
