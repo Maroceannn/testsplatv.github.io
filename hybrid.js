@@ -680,10 +680,8 @@ async function main() {
       target = target.lerp(desiredTarget, dampening)
 
       if (Math.sign(radius) !== Math.sign(lastRadius)) {
-        radiusSignChanged = -1.0;
-      } else {
-        radiusSignChanged = 1.0;
-      }
+        radiusSignChanged = -radiusSignChanged;
+      } 
 
       const x = target.x + radius * Math.sin(alpha) * Math.cos(beta)
       const y = target.y - radius * Math.sin(beta)
