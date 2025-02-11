@@ -1,7 +1,9 @@
 import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
-const startRadius = 0.0
-let radius = 0.0
+const startRadius = 0.1
+let radius = 0.1
+let last_radius = 0.1
+let radiusSignChanged = 1.0
 let alpha = 0.0
 let beta = 0.0
 const minAngle = -20
@@ -677,14 +679,20 @@ async function main() {
       radius = lerp(radius, desiredRadius, dampening)
       target = target.lerp(desiredTarget, dampening)
 
+      if (Math.sign(radius) !== Math.sign(lastRadius)) {
+        radiusSignChanged = -1.0;
+      } else {
+        radiusSignChanged = 1.0;
+      }
+
       const x = target.x + radius * Math.sin(alpha) * Math.cos(beta)
       const y = target.y - radius * Math.sin(beta)
       const z = target.z - radius * Math.cos(alpha) * Math.cos(beta)
       camera.position = new Vector3(x, y, z)
 
       const direction = target.subtract(camera.position).normalize()
-      const rx = Math.asin(-direction.y)
-      const ry = Math.atan2(direction.x, direction.z)
+      const rx = Math.asin(-radiusSignChanged*direction.y)
+      const ry = Math.atan2(radiusSignChanged*direction.x, radiusSignChanged*direction.z)
       camera.rotation = Quaternion.FromEuler(new Vector3(rx, ry, 0))
 
       const moveSpeed = 0.025
@@ -694,6 +702,7 @@ async function main() {
       const forward = new Vector3(-R[2], -R[5], -R[8])
       const right = new Vector3(R[0], R[3], R[6])
 
+      last_radius = radius
       isUpdatingCamera = false
   }
 
