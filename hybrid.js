@@ -741,9 +741,9 @@ async function main() {
       document.getElementById("spinner").style.display = "none";
       gl.uniformMatrix4fv(u_view, false, actualViewMatrix);
       if (isButtonOn) {
-        gl.uniform1f(u_time, Math.round((Math.sin((stopTime - pauseTime) / 1000) / 2 + 1 / 2) * 24) / 25);
+        gl.uniform1f(u_time, (Math.sin((stopTime - pauseTime) / 1000) / 2 + 1 / 2) * 48) / 49;
       } else {
-        gl.uniform1f(u_time, Math.round((Math.sin((Date.now()-pauseTime) / 1000) / 2 + 1 / 2) * 24) / 25);
+        gl.uniform1f(u_time, (Math.sin((Date.now()-pauseTime) / 1000) / 2 + 1 / 2) * 48) / 49;
       }
       // gl.uniform1f(u_time, Math.sin(Date.now() / 1000) / 2 + 1 / 2);
 
