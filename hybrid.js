@@ -2,7 +2,7 @@ import * as SPLAT from "https://cdn.jsdelivr.net/npm/gsplat@latest";
 
 const startRadius = 0.1
 let radius = 0.1
-let last_radius = 0.1
+let lastRadius = 0.1
 let radiusSignChanged = 1.0
 let alpha = 0.0
 let beta = 0.0
@@ -702,7 +702,7 @@ async function main() {
       const forward = new Vector3(-R[2], -R[5], -R[8])
       const right = new Vector3(R[0], R[3], R[6])
 
-      last_radius = radius
+      lastRadius = radius
       isUpdatingCamera = false
   }
 
