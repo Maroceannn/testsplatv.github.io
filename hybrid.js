@@ -301,7 +301,7 @@ const vertexShaderSource = `
       float dt = time - trbf.x;
 
       float topacity = exp(-1.0 * pow(dt / trbf.y, 2.0));
-      if(topacity < 0.02) return;
+      #if(topacity < 0.02) return;
 
       uvec4 motion0 = texelFetch(u_texture, ivec2(((uint(index) & 0x3ffu) << 2) | 2u, uint(index) >> 10), 0);
       uvec4 static0 = texelFetch(u_texture, ivec2(((uint(index) & 0x3ffu) << 2), uint(index) >> 10), 0);
@@ -358,7 +358,7 @@ const vertexShaderSource = `
           (rgba >> 8) & 0xffu,
           (rgba >> 16) & 0xffu,
           (rgba >> 24) & 0xffu) / 255.0;
-      vColor = clamp(vColor, 0.0, 1.0);
+      #vColor = clamp(vColor, 0.0, 1.0);
 
       vec2 vCenter = vec2(pos) / pos.w;
       gl_Position = vec4(
