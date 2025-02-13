@@ -354,10 +354,10 @@ const vertexShaderSource = `
         clamp(pos.z/pos.w+1.0, 0.0, 1.0) * 
         vec4(1.0, 1.0, 1.0, topacity) *
         vec4(
-          clamp((rgba) & 0xffu, 0u, 255u)
-          clamp((rgba >> 8) & 0xffu, 0u, 255u)
-          clamp((rgba >> 16) & 0xffu, 0u, 255u)
-          clamp((rgba >> 24) & 0xffu, 0u, 255u)) / 255.0;
+          (rgba) & 0xffu,
+          (rgba >> 8) & 0xffu,
+          (rgba >> 16) & 0xffu,
+          (rgba >> 24) & 0xffu) / 255.0;
 
       vec2 vCenter = vec2(pos) / pos.w;
       gl_Position = vec4(
