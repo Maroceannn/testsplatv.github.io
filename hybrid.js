@@ -349,15 +349,15 @@ const vertexShaderSource = `
       vec2 minorAxis = min(sqrt(2.0 * lambda2), 1024.0) * vec2(diagonalVector.y, -diagonalVector.x);
       
       uint rgba = static1.w;
-      rgba = clamp(rgba, 0u, 255u);
+
       vColor = 
         clamp(pos.z/pos.w+1.0, 0.0, 1.0) * 
         vec4(1.0, 1.0, 1.0, topacity) *
         vec4(
-          (rgba) & 0xffu, 
-          (rgba >> 8) & 0xffu, 
-          (rgba >> 16) & 0xffu, 
-          (rgba >> 24) & 0xffu) / 255.0;
+          clamp((rgba) & 0xffu, 0.0 255.0)
+          clamp((rgba >> 8) & 0xffu, 0.0 255.0)
+          clamp((rgba >> 16) & 0xffu, 0.0 255.0)
+          clamp((rgba >> 24) & 0xffu, 0.0 255.0)) / 255.0;
 
       vec2 vCenter = vec2(pos) / pos.w;
       gl_Position = vec4(
