@@ -349,6 +349,7 @@ const vertexShaderSource = `
       vec2 minorAxis = min(sqrt(2.0 * lambda2), 1024.0) * vec2(diagonalVector.y, -diagonalVector.x);
       
       uint rgba = static1.w;
+      rgba = clamp(rgba, 0u, 255u);
       vColor = 
         clamp(pos.z/pos.w+1.0, 0.0, 1.0) * 
         vec4(1.0, 1.0, 1.0, topacity) *
