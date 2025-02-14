@@ -809,7 +809,7 @@ async function main() {
           // splatv file
           readChunks(new Response(splatData).body.getReader(), [{ size: 8, type: "magic" }], chunkHandler).then(() => {
             currentCameraIndex = 0;
-            //camera = cameras[currentCameraIndex];
+            camera = cameras[currentCameraIndex];
             //console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
             viewMatrix = getViewMatrix(camera);
           });
@@ -851,9 +851,9 @@ async function main() {
       for (let chunk of JSON.parse(new TextDecoder("utf-8").decode(buffer))) {
         chunks.push(chunk);
         if (chunk.type === "splat") {
-          //cameras = chunk.cameras;
-          //camera = chunk.cameras[0];
-          console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
+          cameras = chunk.cameras;
+          camera = chunk.cameras[0];
+          console.log("Camera Data", camera)
           resize();
         }
       }
