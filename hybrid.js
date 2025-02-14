@@ -16,7 +16,19 @@ const orbitSpeed = 1.75
 const maxPanDistance = 0.05
 const dampening = 0.12
 const cameraData = new SPLAT.CameraData();
-let cameras = [new SPLAT.Camera(cameraData)];
+//let cameras = [new SPLAT.Camera(cameraData)];
+let cameras = [
+  {
+    id: 0,
+    img_name: "00001",
+    width: 2560,
+    height: 1920,
+    position: {x: 0, y: 0, z: -0.1},
+    rotation: {x: 0, y: 0, z: 0, w: 1},
+    fy: 668.155076089281,
+    fx: 668.155076089281,
+  },
+];
 const Matrix3 = SPLAT.Matrix3;
 const Quaternion = SPLAT.Quaternion;
 const Vector3 = SPLAT.Vector3;
@@ -414,15 +426,15 @@ async function main() {
 
   const canvas = document.getElementById("canvas");
   const fps = document.getElementById("fps");
-  camera.width = 1024;
+  //camera.width = 1024;
   // 根据 canvas 的宽高比计算高度
-  camera.height = (canvas.offsetHeight / canvas.offsetWidth) * camera.width;
+  //camera.height = (canvas.offsetHeight / canvas.offsetWidth) * camera.width;
   // 设置 fx 和 fy 为宽度的四分之一
-  camera.fx = camera.width / 4;
-  camera.fy = camera.width / 4;
-  camera.position.x = 0.0;
-  camera.position.y = 0.0;
-  camera.position.z = -radius;
+  //camera.fx = camera.width / 4;
+  //camera.fy = camera.width / 4;
+  //camera.position.x = 0.0;
+  //camera.position.y = 0.0;
+  //camera.position.z = -radius;
   console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy, camera.position);
   //   const camid = document.getElementById("camid");
 
