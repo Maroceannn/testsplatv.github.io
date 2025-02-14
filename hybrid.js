@@ -21,8 +21,8 @@ let cameras = [
   {
     id: 0,
     img_name: "00001",
-    width: 2560,
-    height: 1920,
+    width: 2560 / 2,
+    height: 1920 / 2,
     position: {x: 0, y: 0, z: -0.1},
     rotation: {x: 0, y: 0, z: 0, w: 1},
     fy: 668.155076089281,
