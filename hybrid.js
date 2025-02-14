@@ -846,8 +846,9 @@ async function main() {
       for (let chunk of JSON.parse(new TextDecoder("utf-8").decode(buffer))) {
         chunks.push(chunk);
         if (chunk.type === "splat") {
-          //cameras = chunk.cameras;
-          //camera = chunk.cameras[0];
+          cameras = chunk.cameras;
+          camera = chunk.cameras[0];
+          console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
           resize();
         }
       }
