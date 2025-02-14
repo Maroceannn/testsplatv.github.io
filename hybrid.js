@@ -498,6 +498,7 @@ async function main() {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     gl.uniformMatrix4fv(u_projection, false, projectionMatrix);
+    console.log('resize', camera.fx, camera.fy, innerWidth, innerHeight, downsample)
   };
 
   window.addEventListener("resize", resize);
