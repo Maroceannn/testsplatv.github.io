@@ -414,11 +414,16 @@ async function main() {
 
   const canvas = document.getElementById("canvas");
   const fps = document.getElementById("fps");
-  camera.width = canvas.offsetWidth;
-  camera.height = canvas.offsetHeight;
-  camera.fx = 0.5 * canvas.offsetWidth;
-  camera.fy = 0.5 * canvas.offsetWidth;
-  console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
+  camera.width = 1024;
+  // 根据 canvas 的宽高比计算高度
+  camera.height = (canvas.offsetHeight / canvas.offsetWidth) * camera.width;
+  // 设置 fx 和 fy 为宽度的四分之一
+  camera.fx = camera.width / 4;
+  camera.fy = camera.width / 4;
+  camera.position.x = 0.0;
+  camera.position.y = 0.0;
+  camera.position.z = -radius;
+  console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy, camera.position);
   //   const camid = document.getElementById("camid");
 
   let projectionMatrix;
