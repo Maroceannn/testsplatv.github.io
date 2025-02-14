@@ -414,10 +414,10 @@ async function main() {
 
   const canvas = document.getElementById("canvas");
   const fps = document.getElementById("fps");
-  camera.width = canvas.width;
-  camera.height = canvas.height;
-  camera.fx = 0.5 * canvas.width;
-  camera.fy = 0.5 * canvas.width;
+  camera.width = canvas.offsetWidth;
+  camera.height = canvas.offsetHeight;
+  camera.fx = 0.5 * canvas.offsetWidth;
+  camera.fy = 0.5 * canvas.offsetWidth;
   console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
   //   const camid = document.getElementById("camid");
 
