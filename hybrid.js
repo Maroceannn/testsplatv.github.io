@@ -418,6 +418,7 @@ async function main() {
   camera.height = canvas.height;
   camera.fx = 0.5 * canvas.width;
   camera.fy = 0.5 * canvas.width;
+  console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
   //   const camid = document.getElementById("camid");
 
   let projectionMatrix;
@@ -802,8 +803,9 @@ async function main() {
         } else if (splatData[0] == 75 && splatData[1] == 103) {
           // splatv file
           readChunks(new Response(splatData).body.getReader(), [{ size: 8, type: "magic" }], chunkHandler).then(() => {
-            //currentCameraIndex = 0;
-            //camera = cameras[currentCameraIndex];
+            currentCameraIndex = 0;
+            camera = cameras[currentCameraIndex];
+            console.log("Camera Data", camera.width, camera.height, camera.fx, camera.fy)
             viewMatrix = getViewMatrix(camera);
           });
         } else {
