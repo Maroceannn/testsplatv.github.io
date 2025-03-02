@@ -892,7 +892,7 @@ async function main() {
   };
 
   //const url = params.get("url") ? new URL(params.get("url"), "https://huggingface.co/cakewalk/splat-data/resolve/main/") : "model.splatv";
-  const url = new URL("flame.splatv", "https://huggingface.co/cakewalk/splat-data/resolve/main/");
+  const url = new URL("birthday.splatv", "https://huggingface.co/cakewalk/splat-data/resolve/main/");
   const req = await fetch(url, { mode: "cors", credentials: "omit" });
   if (req.status != 200) throw new Error(req.status + " Unable to load " + req.url);
 
